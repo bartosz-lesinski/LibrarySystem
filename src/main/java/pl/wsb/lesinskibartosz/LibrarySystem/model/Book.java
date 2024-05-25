@@ -4,6 +4,7 @@ package pl.wsb.lesinskibartosz.LibrarySystem.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
