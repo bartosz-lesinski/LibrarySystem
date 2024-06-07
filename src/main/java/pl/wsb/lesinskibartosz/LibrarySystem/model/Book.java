@@ -5,14 +5,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-@Data
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 
 @Entity
 @Table(name = "Book")
@@ -21,27 +23,28 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @NotBlank
     @Column(name = "book_title", nullable = false, length = 255)
     private String title;
 
-    @NotBlank
+    @NotNull
     @Positive
-    @Column(name = "author_id", nullable = false)
-    private int authorId;
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author author;
 
-    @NotBlank
+    @NotNull
     @Positive
     @Column(name = "publish_year", nullable = false)
     private int publishYear;
 
     @NotBlank
-    @Column(name = "isbn", nullable = false, unique = true)
+    @Column(name = "isbn", nullable = false, length = 25)
     private String isbn;
 
-    @Column(name = "available")
+    @Column(name = "available", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean available;
 
 }

@@ -1,4 +1,4 @@
-package pl.wsb.lesinskibartosz.LibrarySystem.Repository;
+package pl.wsb.lesinskibartosz.LibrarySystem.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +20,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByAuthorId(Long authorId);
 
     List<Book> findByAvailable(boolean available);
-
 
 }

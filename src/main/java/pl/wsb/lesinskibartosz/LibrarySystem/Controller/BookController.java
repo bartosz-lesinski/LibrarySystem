@@ -2,63 +2,56 @@ package pl.wsb.lesinskibartosz.LibrarySystem.Controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pl.wsb.lesinskibartosz.LibrarySystem.Repository.BookRepository;
 import pl.wsb.lesinskibartosz.LibrarySystem.model.Book;
+import pl.wsb.lesinskibartosz.LibrarySystem.service.BookService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@Validated
 @RequestMapping("/books")
 public class BookController {
 
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
-    public BookController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     //get all books
     @GetMapping("")
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public ResponseEntity<List<Book>> getAllBooks() {
+        List<Book> books = bookService.findAll();
+        return ResponseEntity.ok(books);
     }
 
-    // get single bookById
+    //get book by id
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookById(@PathVariable Long id) {
-        Optional<Book> bookOptional = bookRepository.findById(id);
-
-        if (bookOptional.isPresent()) {
-            Book book = bookOptional.get();
+        Book book = bookService.findById(id);
+        if (book != null) {
             return ResponseEntity.ok(book);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with this ID not found");
         }
     }
 
-    // get single book by title
+    //get book by title
     @GetMapping("/title/{title}")
     public ResponseEntity<?> getBookByTitle(@PathVariable String title) {
-        Optional<Book> bookOptional = bookRepository.findByTitle(title);
-
-        if (bookOptional.isPresent()) {
-            Book book = bookOptional.get();
+        Book book = bookService.findByTitle(title);
+        if (book != null) {
             return ResponseEntity.ok(book);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with this title not found");
         }
     }
 
-    //get list of books by year
+    //get list of books by publish year
     @GetMapping("/publish_year/{year}")
     public ResponseEntity<?> getBooksByPublishYear(@PathVariable int year) {
-        List<Book> books = bookRepository.findByPublishYear(year);
-
+        List<Book> books = bookService.findByPublishYear(year);
         if (!books.isEmpty()) {
             return ResponseEntity.ok(books);
         } else {
@@ -66,13 +59,11 @@ public class BookController {
         }
     }
 
-    //get single book by isbn
+    //get book by isbn
     @GetMapping("/isbn/{isbn}")
     public ResponseEntity<?> getBookByIsbn(@PathVariable String isbn) {
-        Optional<Book> bookOptional = bookRepository.findByIsbn(isbn);
-
-        if (bookOptional.isPresent()) {
-            Book book = bookOptional.get();
+        Book book = bookService.findByIsbn(isbn);
+        if (book != null) {
             return ResponseEntity.ok(book);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with ISBN " + isbn + " not found");
@@ -82,8 +73,7 @@ public class BookController {
     //get list of available books
     @GetMapping("/available")
     public ResponseEntity<?> getAvailableBooks() {
-        List<Book> books = bookRepository.findByAvailable(true);
-
+        List<Book> books = bookService.findAvailableBooks();
         if (!books.isEmpty()) {
             return ResponseEntity.ok(books);
         } else {
@@ -94,8 +84,7 @@ public class BookController {
     //get list of unavailable books
     @GetMapping("/unavailable")
     public ResponseEntity<?> getUnavailableBooks() {
-        List<Book> books = bookRepository.findByAvailable(false);
-
+        List<Book> books = bookService.findUnavailableBooks();
         if (!books.isEmpty()) {
             return ResponseEntity.ok(books);
         } else {
@@ -103,11 +92,10 @@ public class BookController {
         }
     }
 
-    //get list of books by author id
+    //get list of books by author
     @GetMapping("/author/{authorId}")
     public ResponseEntity<?> getBooksByAuthorId(@PathVariable Long authorId) {
-        List<Book> books = bookRepository.findByAuthorId(authorId);
-
+        List<Book> books = bookService.findByAuthorId(authorId);
         if (!books.isEmpty()) {
             return ResponseEntity.ok(books);
         } else {
@@ -116,20 +104,31 @@ public class BookController {
     }
 
     //add book
-    @PostMapping("/add/")
-    public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
-        Book addedBook = bookRepository.save(book);
-        return new ResponseEntity<>(addedBook, HttpStatus.CREATED);
+    @PostMapping("/add")
+    public ResponseEntity<?> addBook(@Valid @RequestBody Book book) {
+        Book addedBook = bookService.addBook(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedBook);
     }
 
-    //delete book by id
+    //edit book
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> editBook(@PathVariable Long id, @Valid @RequestBody Book updatedBook) {
+        Book editedBook = bookService.editBook(id, updatedBook);
+        if (editedBook != null) {
+            return ResponseEntity.ok(editedBook);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with ID " + id + " not found");
+        }
+    }
+
+    //delete book
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
-        if (!bookRepository.existsById(id)) {
-            return new ResponseEntity<>("Book not found", HttpStatus.NOT_FOUND);
+        boolean deleted = bookService.deleteBook(id);
+        if (deleted) {
+            return ResponseEntity.ok("Book deleted");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with ID " + id + " not found");
         }
-
-        bookRepository.deleteById(id);
-        return new ResponseEntity<>("Book deleted", HttpStatus.OK);
     }
 }

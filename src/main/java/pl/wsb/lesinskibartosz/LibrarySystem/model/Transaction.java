@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-
+@EqualsAndHashCode
 
 @Entity
 @Table(name = "Transaction")
@@ -20,13 +20,13 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
-    private int id;
+    private Long id;
 
     @Column(name = "book_id")
-    private int bookId;
+    private Long bookId;
 
     @Column(name = "user_id")
-    private int userId;
+    private Long userId;
 
     @Column(name = "transaction_date")
     private Date transactionDate;
@@ -36,5 +36,10 @@ public class Transaction {
 
     @Column(name = "fine_amount")
     private BigDecimal fineAmount;
+
+
+    @Column(name = "paid", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean paid = false;
+
 
 }
