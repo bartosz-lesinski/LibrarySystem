@@ -13,7 +13,7 @@ public class LibraryUserService {
 
     private final LibraryUserRepository libraryUserRepository;
 
-    @Autowired
+
     public LibraryUserService(LibraryUserRepository libraryUserRepository) {
         this.libraryUserRepository = libraryUserRepository;
     }

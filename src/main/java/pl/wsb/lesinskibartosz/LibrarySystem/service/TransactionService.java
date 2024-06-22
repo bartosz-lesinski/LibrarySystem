@@ -24,7 +24,6 @@ public class TransactionService {
     private final LibraryUserRepository libraryUserRepository;
     private final TransactionRepository transactionRepository;
 
-    @Autowired
     public TransactionService(BookRepository bookRepository, LibraryUserRepository libraryUserRepository, TransactionRepository transactionRepository) {
         this.bookRepository = bookRepository;
         this.libraryUserRepository = libraryUserRepository;

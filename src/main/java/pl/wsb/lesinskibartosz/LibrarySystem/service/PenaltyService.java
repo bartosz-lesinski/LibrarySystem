@@ -18,7 +18,6 @@ public class PenaltyService {
 
     private final TransactionRepository transactionRepository;
 
-    @Autowired
     public PenaltyService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
